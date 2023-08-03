@@ -7,30 +7,18 @@ import {
 } from 'firebase/messaging';
 
 import {
-    firebaseConfig
+    firebaseConfig,
+    VAPID_KEY,
 } from './firebaseConfig';
 
 //Initialize Firebase Messaging
-export const InitializeMessaging = () => {
+const InitializeMessaging = () => {
+    initializeApp(firebaseConfig);
     isSupported().then(is_supported => {
-        if (
-            is_supported &&
-            (process.env.REACT_APP_ENVIRONMENT === 'staging' ||
-                process.env.REACT_APP_ENVIRONMENT === 'production' ||
-                true)
-        ) {
-            console.log(`FCM Supported: ${is_supported} `);
-            navigator.permissions
-                .query({ name: 'notifications' })
-                .then(function(result) {
-                    if (result.state === 'granted') {
-                        initializeApp(firebaseConfig);
-                        requestForToken().then(fcm_token => {
-                            localStorage.setItem('FCM_TOKEN', fcm_token);
-                        });
-                        //console.log(getApps());
-                    }
-                });
+        if (is_supported) {
+            requestForToken().then(fcm_token => {
+                localStorage.setItem('FCM_TOKEN', fcm_token);
+            });
         } else {
             return false;
         }
@@ -42,23 +30,21 @@ const requestForToken = () => {
     return getToken(messaging, {
         vapidKey: VAPID_KEY
     })
-        .then(currentToken => {
+    .then(currentToken => {
             if (currentToken) {
-                //console.log('current token for client: ', currentToken);
                 return currentToken;
-                // Perform any other neccessary action with the token
             } else {
-                // Show permission request UI
                 console.log(
                     'No registration token available. Request permission to generate one.'
                 );
             }
         })
         .catch(err => {
-            console.log('An error occurred while retrieving token. ', err);
+            console.error('An error occurred while retrieving token. ', err);
         });
 };
 
+InitializeMessaging();
 
 export const onMessageListener = () =>
     new Promise(resolve => {
