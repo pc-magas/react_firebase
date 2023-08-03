@@ -1,13 +1,14 @@
 import './App.css';
-import './Logo';
 import Logo from './Logo';
+import Token from './Token';
 
 function App() {
   return (
     <div className="App">
-      <header className="App-header">
+      <main className="App-header">
+        <Token />      
         <Logo />
-      </header>
+      </main>
     </div>
   );
 }

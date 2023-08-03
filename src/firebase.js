@@ -11,16 +11,17 @@ import {
     VAPID_KEY,
 } from './firebaseConfig';
 
+import store from './flag';
+import { setToken } from './flag';
+
 //Initialize Firebase Messaging
 const InitializeMessaging = () => {
-    initializeApp(firebaseConfig);
+    const app = initializeApp(firebaseConfig);
     isSupported().then(is_supported => {
         if (is_supported) {
             requestForToken().then(fcm_token => {
-                localStorage.setItem('FCM_TOKEN', fcm_token);
+               store.dispatch(setToken(fcm_token));
             });
-        } else {
-            return false;
         }
     });
 };
@@ -47,6 +48,7 @@ const requestForToken = () => {
 InitializeMessaging();
 
 export const onMessageListener = () =>
+    
     new Promise(resolve => {
         onMessage(getMessaging(), payload => {
             resolve(payload);

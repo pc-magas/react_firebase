@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { onMessageListener } from './firebase';
 
 
-const initialState = { flag: true }
+const initialState = { flag: true, token: "" }
 
 function flagReducer(state = initialState, action) {
   // Check to see if the reducer cares about this action
@@ -12,6 +12,14 @@ function flagReducer(state = initialState, action) {
       ...state,
       // and update the copy with the new value
       flag:action.payload
+    }
+  }
+
+  if (action.type === 'flag/token') {
+    return {
+      ...state,
+      // and update the copy with the new value
+      token:action.payload
     }
   }
   // otherwise return the existing state unchanged
@@ -25,11 +33,16 @@ export const setFlag = active => ({
     payload: active==='true'
 });
 
-onMessageListener().then(payload => {
-    if(typeof payload.data !== 'undefined' && typeof payload.data['flag'] !== 'undefined' ) {
-        store.dispatch(setFlag(payload.data.flag));
-    }
-})
-.catch(err => console.log('failed: ', err));
+export const setToken = token => ({
+  type: 'flag/token',
+  payload: token
+});
+
+// onMessageListener().then(payload => {
+//     if(typeof payload.data !== 'undefined' && typeof payload.data['flag'] !== 'undefined' ) {
+//         store.dispatch(setFlag(payload.data.flag));
+//     }
+// })
+// .catch(err => console.log('failed: ', err));
 
 export default store;
