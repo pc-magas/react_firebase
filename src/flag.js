@@ -38,11 +38,19 @@ export const setToken = token => ({
   payload: token
 });
 
-// onMessageListener().then(payload => {
-//     if(typeof payload.data !== 'undefined' && typeof payload.data['flag'] !== 'undefined' ) {
-//         store.dispatch(setFlag(payload.data.flag));
-//     }
-// })
-// .catch(err => console.log('failed: ', err));
+onMessageListener().then(payload => {
+   
+})
+.catch(err => console.log('failed: ', err));
+
+navigator.serviceWorker.addEventListener(
+  'message',
+  function(event) {
+    const message = event.data.data;
+    if(typeof message !== 'undefined' && typeof message['flag'] !== 'undefined' ) {
+        store.dispatch(setFlag(message.flag));
+    }
+  }
+);
 
 export default store;

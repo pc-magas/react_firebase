@@ -26,12 +26,14 @@ const messaging = firebase.messaging();
 // Handle incoming messages while the app is not in focus (i.e in the background, hidden behind other tabs, or completely closed).
 messaging.onBackgroundMessage(function(payload) {
   console.log('Received background message', payload);
+
+  // Propagate message upon UI
   if(typeof payload.data !== 'undefined' && typeof payload.data['flag'] !== 'undefined' ) {
-    
-    const notificationTitle = payload.notification.title;
-    const notificationOptions = {
-      body: (payload.data['flag']=='true')?'Feature Active':'Feature Inactive',
-    };
-    self.registration.showNotification(notificationTitle,notificationOptions);
+    self.clients.matchAll({includeUncontrolled: true}).then(function (clients) {
+      //you can see your main window client in this list.
+      clients.forEach(function(client) {
+          client.postMessage({...payload,'type':'firebaseBG'});
+      });
+    })
   }
 });
